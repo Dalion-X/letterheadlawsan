@@ -30,7 +30,7 @@ button.pri{background:var(--ac);border-color:var(--ac);color:#fff}
 .c p{margin:0 0 17px;text-align:justify}
 .c .d{font-weight:700;margin:0 0 26px}
 .c .ad{margin:0 0 20px;line-height:1.05}
-.c .t{font-size:22px;font-weight:700;line-height:1.27;margin:24px 0 24px;text-transform:uppercase}
+.c .t{font-size:22px;font-weight:700;line-height:1.27;margin:24px 0 24px;text-transform:uppercase;text-align:left}
 .rf{display:flex;align-items:baseline;gap:14px;white-space:nowrap;font-size:15.5px}.rf>span{flex:none}.rf>.yr{flex:1 1 auto;min-width:0;display:flex;align-items:baseline;gap:5px}.rf .bl{flex:1;min-width:30px;min-height:1em;border-bottom:1.5px solid #c39a2b;text-align:center;overflow:hidden;padding:0 4px}
 .sg{margin-top:26px}.sg img{display:block;width:150px;height:auto}
 .sg .gl{width:293px;height:1.5px;background:#c39a2b;margin:2px 0 10px}
@@ -104,9 +104,10 @@ $('pdf').onclick=async()=>{
     pages.style.zoom=1;const pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4'});
     const els=[...document.querySelectorAll('.page')];
     for(let i=0;i<els.length;i++){const cv=await html2canvas(els[i],{scale:2,backgroundColor:'#fff'});if(i)pdf.addPage();pdf.addImage(cv.toDataURL('image/jpeg',.93),'JPEG',0,0,210,297)}
+    const name=($('ttl').value||'letter').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)||'letter';
     const dl=window.claude?await claude.use('downloads'):null;
-    if(!dl){m.textContent='Saving is unavailable in this view. Use Print, then choose Save as PDF.'}
-    else{const name=($('ttl').value||'letter').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,50)||'letter';await dl.save({filename:name+'.pdf',data:pdf.output('blob')});m.textContent=''}
+    if(dl)await dl.save({filename:name+'.pdf',data:pdf.output('blob')});else pdf.save(name+'.pdf');
+    m.textContent=''
   }catch(e){m.textContent=(e&&e.code==='declined')?'':'Could not create the PDF. Try Print, then Save as PDF.'}
   fit();
 };
